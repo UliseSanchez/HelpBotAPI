@@ -28,9 +28,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set image name
+        id: image
+        run: |
+          echo "registry_owner=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner | downcase }}/helpbot-api:latest,ghcr.io/${{ github.repository_owner | downcase }}/helpbot-api:${{ github.sha }}
+          tags: ghcr.io/${{ steps.image.outputs.registry_owner }}/helpbot-api:latest,ghcr.io/${{ steps.image.outputs.registry_owner }}/helpbot-api:${{ github.sha }}
